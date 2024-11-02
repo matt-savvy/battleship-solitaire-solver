@@ -2,20 +2,23 @@ defmodule BattleshipSolitaireSolver do
   @moduledoc """
   Documentation for `BattleshipSolitaireSolver`.
   """
+  alias BattleshipSolitaireSolver.Clues
   alias BattleshipSolitaireSolver.Formation
 
-  def get_all_formations(grid_size, ships) do
+  def get_all_formations(grid_size, clues, ships) do
     formation = Formation.new(grid_size)
 
-    do_get_all_formations(grid_size, formation, ships)
+    do_get_all_formations(grid_size, clues, formation, ships)
     |> List.last()
   end
 
-  defp do_get_all_formations(_grid_size, %Formation{} = formation, [] = _ships) do
+  defp do_get_all_formations(_grid_size, clues, %Formation{} = formation, [] = _ships) do
     [formation]
   end
 
-  defp do_get_all_formations(grid_size, %Formation{cells: cells} = formation, [ship | rest_ships]) do
+  defp do_get_all_formations(grid_size, clues, %Formation{cells: cells} = formation, [
+         ship | rest_ships
+       ]) do
     possible_locs(grid_size, ship)
     |> Enum.map(fn {coords, orientation} ->
       placement = {ship, coords, orientation}
@@ -29,7 +32,7 @@ defmodule BattleshipSolitaireSolver do
     |> Enum.flat_map(fn {placement, ship_cells} ->
       formation = formation |> Formation.place_ship(placement, ship_cells)
 
-      do_get_all_formations(grid_size, formation, rest_ships)
+      do_get_all_formations(grid_size, clues, formation, rest_ships)
     end)
   end
 
