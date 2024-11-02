@@ -1,12 +1,14 @@
 defmodule BattleshipSolitaireSolver.Formation do
   defstruct [
     :cells,
+    :counts,
     :placements
   ]
 
-  def new() do
+  def new(grid_size) do
     %__MODULE__{
       cells: %{},
+      counts: init_counts(grid_size),
       placements: []
     }
   end
@@ -20,5 +22,14 @@ defmodule BattleshipSolitaireSolver.Formation do
     updated_cells = Map.merge(cells, ship_cells)
 
     %{formation | placements: updated_placements, cells: updated_cells}
+  end
+
+  defp init_counts(grid_size) do
+    init = 1..grid_size |> Enum.map(fn x -> {x, 0} end) |> Map.new()
+
+    %{
+      row_counts: init,
+      col_counts: init
+    }
   end
 end
