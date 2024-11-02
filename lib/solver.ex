@@ -26,7 +26,9 @@ defmodule BattleshipSolitaireSolver do
       all_cells_available?(ship_cells, grid_size)
     end)
     |> Enum.flat_map(fn placement ->
-      formation = formation |> Formation.place_ship(placement)
+      ship_cells = ship_cells(placement)
+
+      formation = formation |> Formation.place_ship(placement, ship_cells)
 
       do_get_all_formations(grid_size, formation, rest_ships)
     end)

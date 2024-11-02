@@ -11,9 +11,14 @@ defmodule BattleshipSolitaireSolver.Formation do
     }
   end
 
-  def place_ship(%__MODULE__{placements: placements} = formation, placement) do
+  def place_ship(
+        %__MODULE__{placements: placements, cells: cells} = formation,
+        placement,
+        ship_cells
+      ) do
     updated_placements = [placement | placements]
+    updated_cells = Map.merge(cells, ship_cells)
 
-    %{formation | placements: updated_placements}
+    %{formation | placements: updated_placements, cells: updated_cells}
   end
 end
