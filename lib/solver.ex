@@ -18,16 +18,15 @@ defmodule BattleshipSolitaireSolver do
   defp do_get_all_formations(grid_size, %Formation{} = formation, [ship | rest_ships]) do
     possible_locs(grid_size, ship)
     |> Enum.map(fn {coords, orientation} ->
-      {ship, coords, orientation}
-    end)
-    |> Enum.filter(fn placement ->
+      placement = {ship, coords, orientation}
       ship_cells = ship_cells(placement)
 
+      {placement, ship_cells}
+    end)
+    |> Enum.filter(fn {_placement, ship_cells} ->
       all_cells_available?(ship_cells, grid_size)
     end)
-    |> Enum.flat_map(fn placement ->
-      ship_cells = ship_cells(placement)
-
+    |> Enum.flat_map(fn {placement, ship_cells} ->
       formation = formation |> Formation.place_ship(placement, ship_cells)
 
       do_get_all_formations(grid_size, formation, rest_ships)
