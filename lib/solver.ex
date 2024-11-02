@@ -80,8 +80,11 @@ defmodule BattleshipSolitaireSolver do
     |> Map.new()
   end
 
+  defp ship_size(:carrier), do: 5
   defp ship_size(:battleship), do: 4
   defp ship_size(:cruiser), do: 3
+  defp ship_size(:destroyer), do: 2
+  defp ship_size(:buoy), do: 1
 
   defp all_cells_available?(ship_cells, cells, grid_size) do
     ship_cells
