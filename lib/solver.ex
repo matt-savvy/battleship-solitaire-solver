@@ -42,21 +42,25 @@ defmodule BattleshipSolitaireSolver do
     size = ship_size(ship)
 
     row..(row + size - 1)
-    |> Enum.map(fn row -> {col, row} end)
+    |> Enum.map(fn row -> {{col, row}, :ship} end)
+    |> Map.new()
   end
 
   defp ship_cells({ship, {col, row}, :horizontal}) do
     size = ship_size(ship)
 
     col..(col + size - 1)
-    |> Enum.map(fn col -> {col, row} end)
+    |> Enum.map(fn col -> {{col, row}, :ship} end)
+    |> Map.new()
   end
 
   defp ship_size(:battleship), do: 4
   defp ship_size(:cruiser), do: 3
 
   defp all_cells_available?(ship_cells, grid_size) do
-    Enum.all?(ship_cells, fn {col, row} ->
+    ship_cells
+    |> Map.keys()
+    |> Enum.all?(fn {col, row} ->
       col > 0 and
         col <= grid_size and
         row > 0 and
