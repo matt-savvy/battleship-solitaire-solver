@@ -24,3 +24,4 @@ battleship_solitaire_solver-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+notes.txt
