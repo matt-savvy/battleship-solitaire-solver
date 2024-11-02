@@ -9,11 +9,19 @@ defmodule BattleshipSolitaireSolver do
     formation = Formation.new(grid_size)
 
     do_get_all_formations(grid_size, clues, formation, ships)
-    |> List.last()
+    |> List.first()
   end
 
-  defp do_get_all_formations(_grid_size, clues, %Formation{} = formation, [] = _ships) do
+  defp do_get_all_formations(
+         _grid_size,
+         clues,
+         %Formation{counts: counts} = formation,
+         [] = _ships
+       ) do
     [formation]
+    |> Enum.filter(fn _formation ->
+      satisfies_all_counts?(clues, counts)
+    end)
   end
 
   defp do_get_all_formations(grid_size, clues, %Formation{cells: cells} = formation, [
@@ -70,6 +78,19 @@ defmodule BattleshipSolitaireSolver do
         row > 0 and
         row <= grid_size and
         Map.get(cells, coords, :empty) == :empty
+    end)
+  end
+
+  defp satisfies_all_counts?(%Clues{} = clues, counts) do
+    satisfies_counts?(clues, counts, :col_counts) and
+      satisfies_counts?(clues, counts, :row_counts)
+  end
+
+  defp satisfies_counts?(clues, counts, field) do
+    clues
+    |> Map.get(field)
+    |> Enum.all?(fn {key, count} ->
+      Map.get(counts[field], key) == count
     end)
   end
 end
