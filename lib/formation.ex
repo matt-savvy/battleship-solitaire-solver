@@ -1,10 +1,12 @@
 defmodule BattleshipSolitaireSolver.Formation do
   defstruct [
+    :cells,
     :placements
   ]
 
   def new() do
     %__MODULE__{
+      cells: %{},
       placements: []
     }
   end
