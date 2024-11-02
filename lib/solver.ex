@@ -15,12 +15,13 @@ defmodule BattleshipSolitaireSolver do
   defp do_get_all_formations(
          _grid_size,
          clues,
-         %Formation{counts: counts} = formation,
+         %Formation{counts: counts, cells: cells} = formation,
          [] = _ships
        ) do
     [formation]
     |> Enum.filter(fn _formation ->
-      satisfies_all_counts?(clues, counts)
+      satisfies_all_counts?(clues, counts) and
+        satisfies_all_cells?(clues, cells)
     end)
   end
 
@@ -108,6 +109,12 @@ defmodule BattleshipSolitaireSolver do
     |> Map.get(field)
     |> Enum.all?(fn {key, count} ->
       Map.get(counts[field], key) == count
+    end)
+  end
+
+  defp satisfies_all_cells?(%Clues{cells: clue_cells}, cells) do
+    Enum.all?(clue_cells, fn {coords, value} ->
+      Map.get(cells, coords, :water) == value
     end)
   end
 end
