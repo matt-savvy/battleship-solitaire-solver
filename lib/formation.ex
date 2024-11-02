@@ -1,5 +1,6 @@
 defmodule BattleshipSolitaireSolver.Formation do
   defstruct [
+    :grid_size,
     :cells,
     :counts,
     :placements
@@ -7,6 +8,7 @@ defmodule BattleshipSolitaireSolver.Formation do
 
   def new(grid_size) do
     %__MODULE__{
+      grid_size: grid_size,
       cells: %{},
       counts: init_counts(grid_size),
       placements: []

@@ -8,12 +8,11 @@ defmodule BattleshipSolitaireSolver do
   def get_all_formations(grid_size, clues, ships) do
     formation = Formation.new(grid_size)
 
-    do_get_all_formations(grid_size, clues, formation, ships)
+    do_get_all_formations(clues, formation, ships)
     |> List.first()
   end
 
   defp do_get_all_formations(
-         _grid_size,
          clues,
          %Formation{counts: counts, cells: cells} = formation,
          [] = _ships
@@ -25,7 +24,7 @@ defmodule BattleshipSolitaireSolver do
     end)
   end
 
-  defp do_get_all_formations(grid_size, clues, %Formation{cells: cells} = formation, [
+  defp do_get_all_formations(clues, %Formation{grid_size: grid_size, cells: cells} = formation, [
          ship | rest_ships
        ]) do
     possible_locs(grid_size, ship)
@@ -41,7 +40,7 @@ defmodule BattleshipSolitaireSolver do
     |> Enum.flat_map(fn {placement, ship_cells} ->
       formation = formation |> Formation.place_ship(placement, ship_cells)
 
-      do_get_all_formations(grid_size, clues, formation, rest_ships)
+      do_get_all_formations(clues, formation, rest_ships)
     end)
   end
 
