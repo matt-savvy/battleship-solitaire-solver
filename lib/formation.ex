@@ -19,7 +19,7 @@ defmodule BattleshipSolitaireSolver.Formation do
         ship_cells
       ) do
     updated_placements = [placement | placements]
-    updated_cells = Map.merge(cells, ship_cells)
+    updated_cells = update_cells(cells, ship_cells)
     updated_counts = update_counts(counts, ship_cells)
 
     %{formation | placements: updated_placements, cells: updated_cells, counts: updated_counts}
@@ -32,6 +32,10 @@ defmodule BattleshipSolitaireSolver.Formation do
       row_counts: init,
       col_counts: init
     }
+  end
+
+  defp update_cells(cells, ship_cells) do
+    Map.merge(cells, ship_cells)
   end
 
   defp update_counts(counts, ship_cells) do
