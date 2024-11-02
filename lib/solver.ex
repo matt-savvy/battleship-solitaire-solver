@@ -43,7 +43,7 @@ defmodule BattleshipSolitaireSolver do
     size = ship_size(ship)
 
     row..(row + size - 1)
-    |> Enum.map(fn row -> {{col, row}, :ship} end)
+    |> Enum.map(fn row -> {{col, row}, ship} end)
     |> Map.new()
   end
 
@@ -51,7 +51,7 @@ defmodule BattleshipSolitaireSolver do
     size = ship_size(ship)
 
     col..(col + size - 1)
-    |> Enum.map(fn col -> {{col, row}, :ship} end)
+    |> Enum.map(fn col -> {{col, row}, ship} end)
     |> Map.new()
   end
 
