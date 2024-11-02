@@ -8,7 +8,7 @@ defmodule BattleshipSolitaireSolver do
     formation = Formation.new(grid_size)
 
     do_get_all_formations(grid_size, formation, ships)
-    |> List.first()
+    |> List.last()
   end
 
   defp do_get_all_formations(_grid_size, %Formation{} = formation, [] = _ships) do

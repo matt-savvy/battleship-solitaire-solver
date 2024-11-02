@@ -14,14 +14,15 @@ defmodule BattleshipSolitaireSolver.Formation do
   end
 
   def place_ship(
-        %__MODULE__{placements: placements, cells: cells} = formation,
+        %__MODULE__{placements: placements, cells: cells, counts: counts} = formation,
         placement,
         ship_cells
       ) do
     updated_placements = [placement | placements]
     updated_cells = Map.merge(cells, ship_cells)
+    updated_counts = update_counts(counts, ship_cells)
 
-    %{formation | placements: updated_placements, cells: updated_cells}
+    %{formation | placements: updated_placements, cells: updated_cells, counts: updated_counts}
   end
 
   defp init_counts(grid_size) do
@@ -31,5 +32,15 @@ defmodule BattleshipSolitaireSolver.Formation do
       row_counts: init,
       col_counts: init
     }
+  end
+
+  defp update_counts(counts, ship_cells) do
+    ship_cells
+    |> Map.keys()
+    |> Enum.reduce(counts, fn {col, row}, acc ->
+      acc
+      |> Kernel.update_in([:row_counts, row], &(&1 + 1))
+      |> Kernel.update_in([:col_counts, col], &(&1 + 1))
+    end)
   end
 end
