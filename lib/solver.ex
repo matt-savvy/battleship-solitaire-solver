@@ -20,6 +20,11 @@ defmodule BattleshipSolitaireSolver do
     |> Enum.map(fn {coords, orientation} ->
       {ship, coords, orientation}
     end)
+    |> Enum.filter(fn placement ->
+      ship_cells = ship_cells(placement)
+
+      all_cells_available?(ship_cells, grid_size)
+    end)
     |> Enum.flat_map(fn placement ->
       formation = formation |> Formation.place_ship(placement)
 
@@ -49,4 +54,13 @@ defmodule BattleshipSolitaireSolver do
 
   defp ship_size(:battleship), do: 4
   defp ship_size(:cruiser), do: 3
+
+  defp all_cells_available?(ship_cells, grid_size) do
+    Enum.all?(ship_cells, fn {col, row} ->
+      col > 0 and
+        col <= grid_size and
+        row > 0 and
+        row <= grid_size
+    end)
+  end
 end
