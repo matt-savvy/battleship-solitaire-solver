@@ -27,9 +27,26 @@ defmodule BattleshipSolitaireSolver do
     end)
   end
 
-  def possible_locs(grid_size, _ship) do
+  defp possible_locs(grid_size, _ship) do
     for col <- 1..grid_size, row <- 1..grid_size, orientation <- [:vertical, :horizontal] do
       {{col, row}, orientation}
     end
   end
+
+  defp ship_cells({ship, {col, row}, :vertical}) do
+    size = ship_size(ship)
+
+    row..(row + size - 1)
+    |> Enum.map(fn row -> {col, row} end)
+  end
+
+  defp ship_cells({ship, {col, row}, :horizontal}) do
+    size = ship_size(ship)
+
+    col..(col + size - 1)
+    |> Enum.map(fn col -> {col, row} end)
+  end
+
+  defp ship_size(:battleship), do: 4
+  defp ship_size(:cruiser), do: 3
 end
