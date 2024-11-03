@@ -6,6 +6,8 @@ defmodule BattleshipSolitaireSolver.Formation do
     :placements
   ]
 
+  alias BattleshipSolitaireSolver.Clues
+
   def new(grid_size) do
     %__MODULE__{
       grid_size: grid_size,
@@ -75,5 +77,33 @@ defmodule BattleshipSolitaireSolver.Formation do
       |> Kernel.update_in([:row_counts, row], &(&1 + 1))
       |> Kernel.update_in([:col_counts, col], &(&1 + 1))
     end)
+  end
+
+  def apply_count_clues(
+        %__MODULE__{cells: cells, grid_size: grid_size} = formation,
+        %Clues{row_counts: row_counts, col_counts: col_counts}
+      ) do
+    water_rows =
+      row_counts
+      |> Enum.filter(fn {_row, value} -> value == 0 end)
+      |> Enum.flat_map(fn {row, _value} ->
+        Enum.zip(1..grid_size, List.duplicate(row, grid_size))
+      end)
+
+    water_cols =
+      col_counts
+      |> Enum.filter(fn {_col, value} -> value == 0 end)
+      |> Enum.flat_map(fn {col, _value} ->
+        Enum.zip(List.duplicate(col, grid_size), 1..grid_size)
+      end)
+
+    water_cells =
+      (water_rows ++ water_cols)
+      |> Enum.map(fn coords -> {coords, :water} end)
+      |> Map.new()
+
+    updated_cells = Map.merge(cells, water_cells)
+
+    %__MODULE__{formation | cells: updated_cells}
   end
 end

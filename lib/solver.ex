@@ -6,7 +6,7 @@ defmodule BattleshipSolitaireSolver do
   alias BattleshipSolitaireSolver.Formation
 
   def get_all_formations(grid_size, clues, ships) do
-    formation = Formation.new(grid_size)
+    formation = Formation.new(grid_size) |> Formation.apply_count_clues(clues)
 
     do_get_all_formations(clues, formation, ships)
     |> List.first()
