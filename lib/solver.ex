@@ -50,11 +50,14 @@ defmodule BattleshipSolitaireSolver do
     end)
   end
 
-  defp possible_locs(grid_size, _ship) do
-    for col <- 1..grid_size, row <- 1..grid_size, orientation <- [:vertical, :horizontal] do
+  defp possible_locs(grid_size, ship) do
+    for col <- 1..grid_size, row <- 1..grid_size, orientation <- orientations_for_ship(ship) do
       {{col, row}, orientation}
     end
   end
+
+  def orientations_for_ship(:buoy), do: [:vertical]
+  def orientations_for_ship(_ship), do: [:vertical, :horizontal]
 
   defp ship_cells({ship, {col, row}, :vertical}) do
     size = ship_size(ship)
