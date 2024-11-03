@@ -77,11 +77,7 @@ defmodule BattleshipSolitaireSolver do
   defp ship_cells({ship, {col, row}, :horizontal}) do
     size = ship_size(ship)
 
-    ship_values =
-      case ship do
-        :buoy -> [:buoy]
-        _ship -> [:left | List.duplicate(:body, size - 2)] ++ [:right]
-      end
+    ship_values = [:left | List.duplicate(:body, size - 2)] ++ [:right]
 
     col..(col + size - 1)
     |> Enum.zip(ship_values)
