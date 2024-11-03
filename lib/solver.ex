@@ -42,12 +42,8 @@ defmodule BattleshipSolitaireSolver do
       formation |> Formation.place_ship(placement, ship_cells)
     end)
     |> Enum.filter(fn %{counts: counts, cells: cells} ->
-      if final do
-        satisfies_all_counts?(clues, counts) and
-          satisfies_all_cells?(clues, cells)
-      else
-        true
-      end
+      satisfies_all_counts?(clues, counts, final) and
+        satisfies_all_cells?(clues, cells, final)
     end)
     |> Enum.flat_map(fn formation ->
       do_get_all_formations(clues, formation, rest_ships)
@@ -108,20 +104,30 @@ defmodule BattleshipSolitaireSolver do
     end)
   end
 
-  defp satisfies_all_counts?(%Clues{} = clues, counts) do
-    satisfies_counts?(clues, counts, :col_counts) and
-      satisfies_counts?(clues, counts, :row_counts)
+  defp satisfies_all_counts?(%Clues{} = clues, counts, final) do
+    satisfies_counts?(clues, counts, :col_counts, final) and
+      satisfies_counts?(clues, counts, :row_counts, final)
   end
 
-  defp satisfies_counts?(clues, counts, field) do
+  defp satisfies_counts?(clues, counts, field, final) do
+    compare_fn =
+      case final do
+        true -> &Kernel.==/2
+        false -> &Kernel.<=/2
+      end
+
     clues
     |> Map.get(field)
     |> Enum.all?(fn {key, count} ->
-      Map.get(counts[field], key) == count
+      compare_fn.(Map.get(counts[field], key), count)
     end)
   end
 
-  defp satisfies_all_cells?(%Clues{cells: clue_cells}, cells) do
+  defp satisfies_all_cells?(%Clues{cells: clue_cells}, cells, false = _final) do
+    true
+  end
+
+  defp satisfies_all_cells?(%Clues{cells: clue_cells}, cells, true = _final) do
     Enum.all?(clue_cells, fn {coords, value} ->
       Map.get(cells, coords, :water) == value
     end)
