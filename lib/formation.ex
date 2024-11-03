@@ -79,6 +79,19 @@ defmodule BattleshipSolitaireSolver.Formation do
     end)
   end
 
+  def apply_cell_clues(
+        %__MODULE__{cells: cells} = formation,
+        %Clues{cells: cell_clues}
+      ) do
+    water_cells =
+      cell_clues
+      |> Map.filter(fn {_coords, value} -> value == :water end)
+
+    updated_cells = Map.merge(cells, water_cells)
+
+    %__MODULE__{formation | cells: updated_cells}
+  end
+
   def apply_count_clues(
         %__MODULE__{cells: cells, grid_size: grid_size} = formation,
         %Clues{row_counts: row_counts, col_counts: col_counts}
