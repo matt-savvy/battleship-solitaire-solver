@@ -16,12 +16,13 @@ defmodule BattleshipSolitaireSolver.Formation do
   end
 
   def place_ship(
-        %__MODULE__{placements: placements, cells: cells, counts: counts} = formation,
+        %__MODULE__{placements: placements, grid_size: grid_size, cells: cells, counts: counts} =
+          formation,
         placement,
         ship_cells
       ) do
     updated_placements = [placement | placements]
-    updated_cells = update_cells(cells, ship_cells)
+    updated_cells = update_cells(grid_size, cells, ship_cells)
     updated_counts = update_counts(counts, ship_cells)
 
     %{formation | placements: updated_placements, cells: updated_cells, counts: updated_counts}
@@ -36,8 +37,34 @@ defmodule BattleshipSolitaireSolver.Formation do
     }
   end
 
-  defp update_cells(cells, ship_cells) do
-    Map.merge(cells, ship_cells)
+  defp update_cells(grid_size, cells, ship_cells) do
+    water_cells =
+      surrounding_coords(grid_size, ship_cells)
+      |> Enum.map(fn coords -> {coords, :water} end)
+      |> Map.new()
+
+    cells
+    |> Map.merge(water_cells)
+    |> Map.merge(ship_cells)
+  end
+
+  defp surrounding_coords(grid_size, ship_cells) do
+    ship_cells
+    |> Map.keys()
+    |> Enum.flat_map(fn {col, row} ->
+      for c <- (col - 1)..(col + 1),
+          r <- (row - 1)..(row + 1),
+          not Map.has_key?(ship_cells, {c, r}) do
+        {c, r}
+      end
+    end)
+    |> Enum.uniq()
+    |> Enum.filter(fn {col, row} ->
+      col > 0 and
+        col <= grid_size and
+        row > 0 and
+        row <= grid_size
+    end)
   end
 
   defp update_counts(counts, ship_cells) do
