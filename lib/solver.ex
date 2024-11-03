@@ -124,7 +124,9 @@ defmodule BattleshipSolitaireSolver do
   end
 
   defp satisfies_all_cells?(%Clues{cells: clue_cells}, cells, false = _final) do
-    true
+    Enum.all?(clue_cells, fn {coords, value} ->
+      not Map.has_key?(cells, coords) or Map.get(cells, coords, :water) == value
+    end)
   end
 
   defp satisfies_all_cells?(%Clues{cells: clue_cells}, cells, true = _final) do
