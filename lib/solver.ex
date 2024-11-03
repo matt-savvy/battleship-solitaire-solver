@@ -16,20 +16,18 @@ defmodule BattleshipSolitaireSolver do
   end
 
   defp do_get_all_formations(
-         clues,
-         %Formation{counts: counts, cells: cells} = formation,
+         _clues,
+         %Formation{} = formation,
          [] = _ships
        ) do
     [formation]
-    |> Enum.filter(fn _formation ->
-      satisfies_all_counts?(clues, counts) and
-        satisfies_all_cells?(clues, cells)
-    end)
   end
 
   defp do_get_all_formations(clues, %Formation{grid_size: grid_size, cells: cells} = formation, [
          ship | rest_ships
        ]) do
+    final = length(rest_ships) == 0
+
     possible_locs(grid_size, ship)
     |> Enum.map(fn {coords, orientation} ->
       placement = {ship, coords, orientation}
@@ -42,6 +40,14 @@ defmodule BattleshipSolitaireSolver do
     end)
     |> Enum.map(fn {placement, ship_cells} ->
       formation |> Formation.place_ship(placement, ship_cells)
+    end)
+    |> Enum.filter(fn %{counts: counts, cells: cells} ->
+      if final do
+        satisfies_all_counts?(clues, counts) and
+          satisfies_all_cells?(clues, cells)
+      else
+        true
+      end
     end)
     |> Enum.flat_map(fn formation ->
       do_get_all_formations(clues, formation, rest_ships)
