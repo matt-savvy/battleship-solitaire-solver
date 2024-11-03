@@ -28,7 +28,7 @@ defmodule BattleshipSolitaireSolver do
        ]) do
     final = length(rest_ships) == 0
 
-    possible_locs(grid_size, ship, formation)
+    possible_locs(ship, formation)
     |> Enum.map(fn {coords, orientation} ->
       placement = {ship, coords, orientation}
       ship_cells = ship_cells(placement)
@@ -50,7 +50,8 @@ defmodule BattleshipSolitaireSolver do
     end)
   end
 
-  defp possible_locs(grid_size, ship, %Formation{
+  defp possible_locs(ship, %Formation{
+         grid_size: grid_size,
          placements: [{ship, {last_col, last_row}, _last_orientation} | _rest]
        }) do
     for col <- 1..grid_size,
@@ -61,7 +62,7 @@ defmodule BattleshipSolitaireSolver do
     end
   end
 
-  defp possible_locs(grid_size, ship, _formation) do
+  defp possible_locs(ship, %Formation{grid_size: grid_size}) do
     for col <- 1..grid_size, row <- 1..grid_size, orientation <- orientations_for_ship(ship) do
       {{col, row}, orientation}
     end
