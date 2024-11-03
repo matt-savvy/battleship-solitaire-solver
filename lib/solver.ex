@@ -17,10 +17,10 @@ defmodule BattleshipSolitaireSolver do
 
   defp do_get_all_formations(
          _clues,
-         %Formation{} = formation,
+         %Formation{placements: placements} = formation,
          [] = _ships
        ) do
-    [formation]
+    [%{formation | placements: Enum.reverse(placements)}]
   end
 
   defp do_get_all_formations(clues, %Formation{grid_size: grid_size, cells: cells} = formation, [
