@@ -40,9 +40,10 @@ defmodule BattleshipSolitaireSolver do
     |> Enum.filter(fn {_placement, ship_cells} ->
       all_cells_available?(ship_cells, cells, grid_size)
     end)
-    |> Enum.flat_map(fn {placement, ship_cells} ->
-      formation = formation |> Formation.place_ship(placement, ship_cells)
-
+    |> Enum.map(fn {placement, ship_cells} ->
+      formation |> Formation.place_ship(placement, ship_cells)
+    end)
+    |> Enum.flat_map(fn formation ->
       do_get_all_formations(clues, formation, rest_ships)
     end)
   end
