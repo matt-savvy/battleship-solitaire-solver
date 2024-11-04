@@ -80,16 +80,75 @@ defmodule BattleshipSolitaireSolver.Formation do
   end
 
   def apply_cell_clues(
-        %__MODULE__{cells: cells} = formation,
+        %__MODULE__{cells: cells, grid_size: grid_size} = formation,
         %Clues{cells: cell_clues}
       ) do
+    surrounding_water_cells =
+      cell_clues
+      |> Enum.reject(fn {_coords, value} -> value == :water end)
+      |> Enum.flat_map(fn {coords, value} ->
+        surrounding_water(coords, grid_size, value)
+      end)
+      |> Enum.map(fn coords -> {coords, :water} end)
+      |> Map.new()
+
     water_cells =
       cell_clues
       |> Map.filter(fn {_coords, value} -> value == :water end)
 
-    updated_cells = Map.merge(cells, water_cells)
+    updated_cells =
+      cells
+      |> Map.merge(surrounding_water_cells)
+      |> Map.merge(water_cells)
 
     %__MODULE__{formation | cells: updated_cells}
+  end
+
+  defp get_surrounding_water({col, row}, grid_size, filter_f) when is_function(filter_f) do
+    col_range = max(col - 1, 1)..min(col + 1, grid_size)
+    row_range = max(row - 1, 1)..min(row + 1, grid_size)
+
+    for s_col <- col_range,
+        s_row <- row_range,
+        {s_col, s_row} != {col, row} and filter_f.({s_col, s_row}) do
+      {s_col, s_row}
+    end
+  end
+
+  defp surrounding_water({col, row} = coords, grid_size, :body) do
+    get_surrounding_water(coords, grid_size, fn {s_col, s_row} ->
+      s_col != col and s_row != row
+    end)
+  end
+
+  defp surrounding_water({col, row} = coords, grid_size, :top) do
+    get_surrounding_water(coords, grid_size, fn s_coords ->
+      s_coords != {col, row + 1}
+    end)
+  end
+
+  defp surrounding_water({col, row} = coords, grid_size, :bottom) do
+    get_surrounding_water(coords, grid_size, fn s_coords ->
+      s_coords != {col, row - 1}
+    end)
+  end
+
+  defp surrounding_water({col, row} = coords, grid_size, :left) do
+    get_surrounding_water(coords, grid_size, fn s_coords ->
+      s_coords != {col + 1, row}
+    end)
+  end
+
+  defp surrounding_water({col, row} = coords, grid_size, :right) do
+    get_surrounding_water(coords, grid_size, fn s_coords ->
+      s_coords != {col - 1, row}
+    end)
+  end
+
+  defp surrounding_water({col, row} = coords, grid_size, :buoy) do
+    get_surrounding_water(coords, grid_size, fn {s_col, s_row} ->
+      s_col != col and s_row != row
+    end)
   end
 
   def apply_count_clues(
